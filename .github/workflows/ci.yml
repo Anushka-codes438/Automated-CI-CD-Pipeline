@@ -25,3 +25,19 @@ jobs:
          docker build -t flask-registration-app:latest .
       - name: Verify Docker Images
         run: docker images
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with: 
+            aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            aws-region: ${{ secrets.AWS_REGION }}
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+      - name: Tag Docker Image
+        run: |
+         docker tag flask-registration-app:latest \
+         926725307674.dkr.ecr.ap-south-1.amazonaws.com/flask-registration-app:latest
+      - name: Push Docker Image to ECR
+        run: |
+         docker push 926725307674.dkr.ecr.ap-south-1.amazonaws.com/flask-registration-app:latest
